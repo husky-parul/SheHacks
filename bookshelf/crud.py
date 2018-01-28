@@ -21,7 +21,11 @@ import datetime
 
 
 crud = Blueprint('crud', __name__)
-
+categories={'physical appearance':['head','hair','eye','beautiful','beauty','weight','height','clothes','health','gym','mirror','weight gain','age','wellbeing','age','voice'],
+'social anxiety':['people','anxiety attacks','group','fear','conversation','anyone','self-confidence','embarrassment','anxiety','person','individuals'],
+'professional life':['career','money','wage','work schedule','work','apprenticeship','job','opportunity','salary','manager'],
+'relationship':['friends','boyfriend','partner','husband','family','son','daughter','sister','brother','mother','father','relationship','friends','friendship'],
+'life':['life','holidays','beginning','place','house']}
 
 # [START list]
 @crud.route("/")
