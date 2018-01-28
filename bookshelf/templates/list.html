@@ -17,24 +17,22 @@
 
 {% block content %}
 
-<h3>Journals</h3>
+<h3>Journals
 <a href="/books/add" class="btn btn-success btn-sm">
-  <i class="glyphicon glyphicon-plus"></i>
-  Post new journal
-</a>
+  <i class="glyphicon glyphicon-plus"></i> Post new journal</a>
+</h3>
+
 
 {% for book in books %}
 
 <div class="media">
-  <a href="/books/{{book.id}}">
     <div class="media-left">
-      <img src="http://placekitten.com/g/128/192">
+      <img src="http://www.pngall.com/wp-content/uploads/2016/04/Hummingbird-PNG-Image.png"  width="150" height="150"> 
     </div>
     <div class="media-body">
-      <h4>{{book.title}}</h4>
+      <a href="/books/{{book.id}}"> <h4>{{book.title}}</h4> </a>
       <p>{{book.description}}</p>
     </div>
-  </a>
 </div>
 {% else %}
 <p>No journal found</p>

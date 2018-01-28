@@ -15,27 +15,38 @@
 #}
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
-    <title>Online Journal Add name here</title>
+    <title>Hummingbird</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Sacramento" rel="stylesheet">
   </head>
+
   <body>
     <div class="navbar navbar-default">
       <div class="container">
         <div class="navbar-header">
-          <div class="navbar-brand">Home</div>
+          <div class="navbar-brand" style="font-family: 'Sacramento', cursive;; font-size: 40px; color: black;">Hummingbird</div>
         </div>
         <ul class="nav navbar-nav">
           <li><a href="/books">Journals</a></li>
-        </ul>
-        
-        <ul class="nav navbar-nav">
-            <li><a href="/books/home">Entity</a></li>
-            <li><a href="/books/cummulative">Categories</a></li>
-          </ul>
+          <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle">Visualization <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li><a href="/books/home">Entity</a></li>
+                <li><a href="/books/cummulative">Categories</a></li>
+            </ul>
+        </li>
       </div>
+    </div>
+
+    <div class="jumbotron" style="background-image: url(https://hdwallsource.com/img/2014/5/lilly-pulitzer-12547-12934-hd-wallpapers.jpg);">
+      
     </div>
     <div class="container">
       {% block content %}{% endblock %}
