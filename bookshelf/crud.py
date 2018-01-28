@@ -47,10 +47,23 @@ def list():
                 cumm_sentiment.update({entity_val:[book.get('sentiment')]})
        
             
-    print '1.----------------',cumm_sentiment
+    print '1.----------------1---------',books
+    new_book=[]
+    visited=[]
+    for book in books:
+        print 'old date: ', book['date']
+        new_date="-".join(book['date'].split(":", 2)[:2])
+        print '___________________________ new_date,', new_date
+        if new_date not in visited:
+            visited.append(new_date)
+            new_book.append(book)
+
+   
+  
+    print '________________ new_book: ',new_book
     return render_template(
         "list.html",
-        books=books,
+        books=new_book,
         next_page_token=next_page_token)
 # [END list]
 
@@ -105,7 +118,10 @@ def add():
                 data['sentiment']=sentiment.score
                 data['description']=text
                 data['title']=title
-                data['publishedDate']=datetime.datetime.now().strftime("%d/%m/%y")
+                print '%%%%%%%%%%%%%%%%%%%%%: ',str(datetime.datetime.now())
+                ddd=str(datetime.datetime.now())
+                date_str=unicode(ddd, "utf-8")
+                data['date']=date_str
                 book = get_model().create(data)
                 print 'book: ',book
         else:
