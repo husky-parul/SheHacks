@@ -1,22 +1,23 @@
-# Copyright 2015 Google Inc.
+# 2018 SheHacks
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# you may not use this file except in compliance with the
+# License.  You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS
+# IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied.  See the License for the specific language
+# governing permissions and limitations under the License.
 
 from bookshelf import get_model
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 from flask import Blueprint, redirect, render_template, request, url_for
+import datetime
 
 
 crud = Blueprint('crud', __name__)
@@ -25,16 +26,45 @@ crud = Blueprint('crud', __name__)
 # [START list]
 @crud.route("/")
 def list():
+    
     token = request.args.get('page_token', None)
+  
     if token:
         token = token.encode('utf-8')
 
-    books, next_page_token = get_model().list(cursor=token)
-
+    books, next_page_token = get_model().list()
+    cumm_sentiment={}
+  
+    for book in books:
+        if book.get('entity'):
+            entity_val=book['entity']
+            sentiment_val=[]
+            if cumm_sentiment.get(entity_val):
+                sentiment_val=cumm_sentiment.get(entity_val)
+                sentiment_val.append(book.get('sentiment'))
+                cumm_sentiment[entity_val]=sentiment_val
+            else:
+                cumm_sentiment.update({entity_val:[book.get('sentiment')]})
+       
+            
+    print '1.----------------',cumm_sentiment
     return render_template(
         "list.html",
         books=books,
         next_page_token=next_page_token)
+# [END list]
+
+@crud.route("/home")
+def home():
+    print 'this is home **************'
+    token = request.args.get('page_token', None)
+    print 'token: ',token
+    if token:
+        token = token.encode('utf-8')
+
+    books, next_page_token = get_model().list()
+    
+    return render_template("seeme.html")
 # [END list]
 
 
@@ -56,6 +86,7 @@ def add():
 
         # Retrieve inputs and create document object
         text = data_txt['description']
+        title = data_txt['title']
         document = language.types.Document(content=text, type=enums.Document.Type.PLAIN_TEXT)
 
         # Retrieve response from Natural Language's analyze_entities() method
@@ -72,12 +103,17 @@ def add():
                 data={}
                 data['entity']=i.name
                 data['sentiment']=sentiment.score
+                data['description']=text
+                data['title']=title
+                data['publishedDate']=datetime.datetime.now().strftime("%d/%m/%y")
                 book = get_model().create(data)
+                print 'book: ',book
         else:
             data={}
-            data['entity']='UNK'
+            data['entity_val']='UNK'
             data['sentiment']=sentiment.score
             book = get_model().create(data)
+            print 'book: ',book
        
         
         return redirect(url_for('.view', id=book['id']))

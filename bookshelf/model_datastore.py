@@ -1,16 +1,17 @@
-# Copyright 2015 Google Inc.
+# 2018 SheHacks
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# you may not use this file except in compliance with the
+# License.  You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS
+# IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied.  See the License for the specific language
+# governing permissions and limitations under the License.
+#}
 
 from flask import current_app
 from google.cloud import datastore
@@ -52,7 +53,24 @@ def from_datastore(entity):
 def list(limit=10, cursor=None):
     ds = get_client()
 
-    query = ds.query(kind='Book', order=['title'])
+    query = ds.query(kind='Book', order=['publishedDate'])
+    query_iterator = query.fetch(limit=limit, start_cursor=cursor)
+    page = next(query_iterator.pages)
+
+    entities = builtin_list(map(from_datastore, page))
+    next_cursor = (
+        query_iterator.next_page_token.decode('utf-8')
+        if query_iterator.next_page_token else None)
+
+    return entities, next_cursor
+# [END list]
+
+
+# [START list]
+def addEntitySentiment(limit=10, cursor=None):
+    ds = get_client()
+
+    query = ds.query(kind='Book', order=['publishedDate'])
     query_iterator = query.fetch(limit=limit, start_cursor=cursor)
     page = next(query_iterator.pages)
 
@@ -85,6 +103,7 @@ def update(data, id=None):
         exclude_from_indexes=['description'])
 
     entity.update(data)
+    print 'in update: ---------', data
     ds.put(entity)
     return from_datastore(entity)
 
