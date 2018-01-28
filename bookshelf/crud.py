@@ -108,7 +108,7 @@ def home():
                 cumm_sentiment.update({entity_val:[book.get('sentiment')]})
 
     line = pygal.Line()
-    line.title = 'Sentiments data' #set chart title
+    line.title = 'Sentiments data breakdown on entities' #set chart title
     line.x_labels = map(str, range(0, 6)) #set the x-axis labels.
     print 'am i alive************', cumm_sentiment
     for cat,val in cumm_sentiment.iteritems():
@@ -165,7 +165,7 @@ def cummulative():
 
 
     line = pygal.Line()
-    line.title = 'Sentiments data' #set chart title
+    line.title = 'Sentiments analysis breakdown on categories' #set chart title
     min_date=min_date.split(' ')[1]
     min_date=min_date.split('-')[0]
     max_date=max_date.split(' ')[1]
