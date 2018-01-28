@@ -16,7 +16,7 @@ from bookshelf import get_model
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for, Markup
 import datetime
 import pygal
 import json
@@ -34,6 +34,8 @@ categories={'physical appearance':['head','hair','eye','beautiful','beauty','wei
 'professional life':['career','money','wage','work schedule','work','apprenticeship','job','opportunity','salary','manager'],
 'relationship':['friends','boyfriend','partner','husband','family','son','daughter','sister','brother','mother','father','relationship','friends','friendship'],
 'life':['life','holidays','beginning','place','house']}
+
+SENTIMENTS={}
 
 # [START list]
 @crud.route("/")
@@ -62,6 +64,7 @@ def list():
    
     new_book=[]
     visited=[]
+    SENTIMENTS=cumm_sentiment
     for book in books:
         new_date="-".join(book['date'].split(":", 2)[:2])
 
@@ -72,11 +75,16 @@ def list():
    
   
     print '1: _______________: ',cumm_sentiment
+    print '2: **************: ', SENTIMENTS
+    NEW_BOOK=new_book
     return render_template(
         "list.html",
         books=new_book,
         next_page_token=next_page_token)
 # [END list]
+
+
+
 
 @crud.route("/home", methods=['POST','GET'])
 def home():
@@ -85,28 +93,53 @@ def home():
     title = 'entities'
     # bar_chart = pygal.Bar(width=1200, height=600,
     #                       explicit_size=True, title=title, style=DarkSolarizedStyle)
-    bar_chart = pygal.StackedLine(width=1200, height=600,
-                         explicit_size=True, title=title, fill=True)
+    # bar_chart = pygal.StackedLine(width=1200, height=600,
+    #                      explicit_size=True, title=title, fill=True)
+    # bar_chart.x_labels = ['apple','oranges','grapes']
+    # imp_temps=[20,59,1]
+    # bar_chart.add('Temps in F', imp_temps)
+    #bar_chart.render_in_browser()
+
+    token = request.args.get('page_token', None)
+  
+    if token:
+        token = token.encode('utf-8')
+
+    books, next_page_token = get_model().list()
+    cumm_sentiment={}
+  
+    for book in books:
+        if book.get('entity'):
+            entity_val=book['entity']
+            sentiment_val=[]
+            if cumm_sentiment.get(entity_val):
+                sentiment_val=cumm_sentiment.get(entity_val)
+                sentiment_val.append(book.get('sentiment'))
+                cumm_sentiment[entity_val]=sentiment_val
+            else:
+                cumm_sentiment.update({entity_val:[book.get('sentiment')]})
+
+    line = pygal.Line()
+    line.title = 'Sentiments data' #set chart title
+    line.x_labels = map(str, range(2012, 2014)) #set the x-axis labels.
+    print 'am i alive', cumm_sentiment
+    for cat,val in cumm_sentiment.iteritems():
+        print 'cat: ******',cat, "\n val: ",val
+        line.add(cat, val) #set values.
+    print line
+    line.render_in_browser()
  
-    bar_chart.x_labels = ['apple','oranges','grapes']
-    imp_temps=[20,59,1]
-    bar_chart.add('Temps in F', imp_temps)
  
-    html = """
-        <html>
-             <head>
-                  <title>%s</title>
-             </head>
-              <body>
-                 %s
-             </body>
-        </html>
-        """ % (title, bar_chart.render())
- 
+
+    return 'string'
+
+
     
-    
-    return render_template("seeme.html",action=html)
-# [END list]
+
+
+
+
+
 
 
 @crud.route('/<id>')
@@ -162,7 +195,7 @@ def add():
         
         return redirect(url_for('.view', id=book['id']))
 
-    return render_template("form.html", action="Add12121", book={})
+    return render_template("form.html", action="Add", book={})
 # [END add]
 
 
