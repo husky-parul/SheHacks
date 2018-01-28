@@ -109,7 +109,7 @@ def home():
 
     line = pygal.Line()
     line.title = 'Sentiments data' #set chart title
-    line.x_labels = map(str, range(2012, 2014)) #set the x-axis labels.
+    line.x_labels = map(str, range(0, 6)) #set the x-axis labels.
     print 'am i alive************', cumm_sentiment
     for cat,val in cumm_sentiment.iteritems():
         print 'cat: ******',cat, "\n val: ",val
@@ -151,8 +151,7 @@ def cummulative():
     for sentiment, senti_val in cumm_sentiment.iteritems():
         #looping throg categories
         for cat, cat_val in categories.iteritems():
-            if sentiment in categories.get('physical appearance'):
-                print '@@@@@@@@: ',sentiment
+            
             if sentiment in cat_val:
                 if new_cat_dict.get(cat):
                     new_cat_dict_val=new_cat_dict.get(cat)
@@ -161,23 +160,22 @@ def cummulative():
                 else:
                     new_cat_dict.update({cat:senti_val})
 
-    
-        
-    print '/cummm ********', cumm_sentiment
     print '/new_cat_dict !!!!!!!!!!!!!!!: ',new_cat_dict
     print 'min_date: ',min_date, 'max_date: ', max_date
 
 
     line = pygal.Line()
     line.title = 'Sentiments data' #set chart title
-    line.x_labels = map(str, range(2016, 2017)) #set the x-axis labels.
+    min_date=min_date.split(' ')[1]
+    min_date=min_date.split('-')[0]
+    max_date=max_date.split(' ')[1]
+    max_date=max_date.split('-')[0]
+  
+    line.x_labels = map(str, range(1, 19)) #set the x-axis labels.
     for cat,val in new_cat_dict.iteritems():
-        print 'cat: ******',cat, "\n val: ",val
+       
         line.add(cat, val) #set values.
-    
-    #print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%: ',new_dict
 
-    
     print line
     line.render_in_browser()
     return 'string',cumm_sentiment
