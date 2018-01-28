@@ -18,6 +18,14 @@ from google.cloud.language import enums
 from google.cloud.language import types
 from flask import Blueprint, redirect, render_template, request, url_for
 import datetime
+import pygal
+import json
+from urllib2 import urlopen  # python 2 syntax
+#from urllib.request import urlopen # python 3 syntax
+ 
+ 
+from flask import Flask
+from pygal.style import DarkSolarizedStyle
 
 
 crud = Blueprint('crud', __name__)
@@ -70,17 +78,34 @@ def list():
         next_page_token=next_page_token)
 # [END list]
 
-@crud.route("/home")
+@crud.route("/home", methods=['POST','GET'])
 def home():
     print 'this is home **************'
-    token = request.args.get('page_token', None)
-    print 'token: ',token
-    if token:
-        token = token.encode('utf-8')
-
-    books, next_page_token = get_model().list()
+    # create a bar chart
+    title = 'entities'
+    # bar_chart = pygal.Bar(width=1200, height=600,
+    #                       explicit_size=True, title=title, style=DarkSolarizedStyle)
+    bar_chart = pygal.StackedLine(width=1200, height=600,
+                         explicit_size=True, title=title, fill=True)
+ 
+    bar_chart.x_labels = ['apple','oranges','grapes']
+    imp_temps=[20,59,1]
+    bar_chart.add('Temps in F', imp_temps)
+ 
+    html = """
+        <html>
+             <head>
+                  <title>%s</title>
+             </head>
+              <body>
+                 %s
+             </body>
+        </html>
+        """ % (title, bar_chart.render())
+ 
     
-    return render_template("seeme.html")
+    
+    return render_template("seeme.html",action=html)
 # [END list]
 
 
@@ -137,7 +162,7 @@ def add():
         
         return redirect(url_for('.view', id=book['id']))
 
-    return render_template("form.html", action="Add", book={})
+    return render_template("form.html", action="Add12121", book={})
 # [END add]
 
 

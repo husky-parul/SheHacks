@@ -68,19 +68,20 @@ def list(limit=1000, cursor=None):
 
 
 # [START list]
-def addEntitySentiment(limit=10, cursor=None):
-    ds = get_client()
+def home(limit=10, cursor=None):
+    pass
+    # ds = get_client()
 
-    query = ds.query(kind='Book', order=['title'])
-    query_iterator = query.fetch(limit=limit, start_cursor=cursor)
-    page = next(query_iterator.pages)
+    # query = ds.query(kind='Book', order=['title'])
+    # query_iterator = query.fetch(limit=limit, start_cursor=cursor)
+    # page = next(query_iterator.pages)
 
-    entities = builtin_list(map(from_datastore, page))
-    next_cursor = (
-        query_iterator.next_page_token.decode('utf-8')
-        if query_iterator.next_page_token else None)
+    # entities = builtin_list(map(from_datastore, page))
+    # next_cursor = (
+    #     query_iterator.next_page_token.decode('utf-8')
+    #     if query_iterator.next_page_token else None)
 
-    return entities, next_cursor
+    # return entities, next_cursor
 # [END list]
 
 
