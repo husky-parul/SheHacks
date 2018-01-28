@@ -88,20 +88,8 @@ def list():
 
 @crud.route("/home", methods=['POST','GET'])
 def home():
-    print 'this is home **************'
-    # create a bar chart
     title = 'entities'
-    # bar_chart = pygal.Bar(width=1200, height=600,
-    #                       explicit_size=True, title=title, style=DarkSolarizedStyle)
-    # bar_chart = pygal.StackedLine(width=1200, height=600,
-    #                      explicit_size=True, title=title, fill=True)
-    # bar_chart.x_labels = ['apple','oranges','grapes']
-    # imp_temps=[20,59,1]
-    # bar_chart.add('Temps in F', imp_temps)
-    #bar_chart.render_in_browser()
-
     token = request.args.get('page_token', None)
-  
     if token:
         token = token.encode('utf-8')
 
@@ -122,25 +110,77 @@ def home():
     line = pygal.Line()
     line.title = 'Sentiments data' #set chart title
     line.x_labels = map(str, range(2012, 2014)) #set the x-axis labels.
-    print 'am i alive', cumm_sentiment
+    print 'am i alive************', cumm_sentiment
     for cat,val in cumm_sentiment.iteritems():
         print 'cat: ******',cat, "\n val: ",val
         line.add(cat, val) #set values.
     print line
     line.render_in_browser()
- 
- 
-
     return 'string'
 
 
+@crud.route("/cummulative", methods=['POST','GET'])
+def cummulative():
+    title = 'entities'
+    token = request.args.get('page_token', None)
+    if token:
+        token = token.encode('utf-8')
+
+    books, next_page_token = get_model().list()
+    cumm_sentiment={}
+    min_date="-".join(books[0]['date'].split(":", 2)[:2])
+    max_date=""
+    for book in books:
+        if book.get('entity'):
+            entity_val=book['entity']
+            sentiment_val=[]
+            if cumm_sentiment.get(entity_val):
+                sentiment_val=cumm_sentiment.get(entity_val)
+                sentiment_val.append(book.get('sentiment'))
+                cumm_sentiment[entity_val]=sentiment_val
+            else:
+                cumm_sentiment.update({entity_val:[book.get('sentiment')]})
+ 
+            if min_date > "-".join(book['date'].split(":", 2)[:2]):
+                min_date="-".join(book['date'].split(":", 2)[:2])
+            if max_date < "-".join(book['date'].split(":", 2)[:2]):
+                max_date="-".join(book['date'].split(":", 2)[:2])
+
+    new_cat_dict={}
+    #looping through sentiments
+    for sentiment, senti_val in cumm_sentiment.iteritems():
+        #looping throg categories
+        for cat, cat_val in categories.iteritems():
+            if sentiment in categories.get('physical appearance'):
+                print '@@@@@@@@: ',sentiment
+            if sentiment in cat_val:
+                if new_cat_dict.get(cat):
+                    new_cat_dict_val=new_cat_dict.get(cat)
+                    new_cat_dict_val=new_cat_dict_val+senti_val
+                    new_cat_dict[cat]=new_cat_dict_val
+                else:
+                    new_cat_dict.update({cat:senti_val})
+
     
+        
+    print '/cummm ********', cumm_sentiment
+    print '/new_cat_dict !!!!!!!!!!!!!!!: ',new_cat_dict
+    print 'min_date: ',min_date, 'max_date: ', max_date
 
 
+    line = pygal.Line()
+    line.title = 'Sentiments data' #set chart title
+    line.x_labels = map(str, range(2016, 2017)) #set the x-axis labels.
+    for cat,val in new_cat_dict.iteritems():
+        print 'cat: ******',cat, "\n val: ",val
+        line.add(cat, val) #set values.
+    
+    #print '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%: ',new_dict
 
-
-
-
+    
+    print line
+    line.render_in_browser()
+    return 'string',cumm_sentiment
 
 @crud.route('/<id>')
 def view(id):
