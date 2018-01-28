@@ -62,8 +62,7 @@ def list(limit=1000, cursor=None):
     next_cursor = (
         query_iterator.next_page_token.decode('utf-8')
         if query_iterator.next_page_token else None)
-    print 'in datamodel: *******', entities
-    print '********************'
+    
     return entities, next_cursor
 # [END list]
 

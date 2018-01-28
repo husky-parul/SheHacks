@@ -47,20 +47,19 @@ def list():
                 cumm_sentiment.update({entity_val:[book.get('sentiment')]})
        
             
-    print '1.----------------1---------',books
+   
     new_book=[]
     visited=[]
     for book in books:
-        print 'old date: ', book['date']
         new_date="-".join(book['date'].split(":", 2)[:2])
-        print '___________________________ new_date,', new_date
+
         if new_date not in visited:
             visited.append(new_date)
             new_book.append(book)
 
    
   
-    print '________________ new_book: ',new_book
+    print '1: _______________: ',cumm_sentiment
     return render_template(
         "list.html",
         books=new_book,
